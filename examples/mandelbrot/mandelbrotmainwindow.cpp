@@ -36,7 +36,7 @@ MandelbrotMainWindow::MandelbrotMainWindow(QWidget *parent) :
     graph->setImageColumn(mandelbrot_col_display);
     // image color range is calculated manually!
     graph->setAutoImageRange(false);
-    graph->setImageMin(0);
+    graph->setImageMin(1);
     graph->setImageMax(ui->spinMaxIterations->value());
     // set image size
     graph->setX(ui->plot->getXMin());
@@ -71,9 +71,9 @@ void MandelbrotMainWindow::paletteChanged(JKQTPMathImageColorPalette pal)
 void MandelbrotMainWindow::maxIterationsChanged(int/* maxIter*/)
 {
     graph->setAutoImageRange(false);
-    graph->setImageMin(0);
+    graph->setImageMin(1);
     if (ui->chkLogScaling->isChecked()) {
-        graph->setImageMax(log10(ui->spinMaxIterations->value()));
+        graph->setImageMax(log(ui->spinMaxIterations->value())/log(10.0));
     } else {
         graph->setImageMax(ui->spinMaxIterations->value());
     }
@@ -83,14 +83,14 @@ void MandelbrotMainWindow::maxIterationsChanged(int/* maxIter*/)
 void MandelbrotMainWindow::logScalingChanged(bool en)
 {
     if (en) {
-        std::transform(ui->plot->getDatastore()->begin(mandelbrot_col), ui->plot->getDatastore()->end(mandelbrot_col), ui->plot->getDatastore()->begin(mandelbrot_col_display), &log10);
+        std::transform(ui->plot->getDatastore()->begin(mandelbrot_col), ui->plot->getDatastore()->end(mandelbrot_col), ui->plot->getDatastore()->begin(mandelbrot_col_display), [](double v)->double { return log(v)/log(10.0); });
     } else {
         std::copy(ui->plot->getDatastore()->begin(mandelbrot_col), ui->plot->getDatastore()->end(mandelbrot_col), ui->plot->getDatastore()->begin(mandelbrot_col_display));
     }
     graph->setAutoImageRange(false);
-    graph->setImageMin(0);
+    graph->setImageMin(1);
     if (ui->chkLogScaling->isChecked()) {
-        graph->setImageMax(log10(ui->spinMaxIterations->value()));
+        graph->setImageMax(log(ui->spinMaxIterations->value())/log(10.0));
     } else {
         graph->setImageMax(ui->spinMaxIterations->value());
     }
